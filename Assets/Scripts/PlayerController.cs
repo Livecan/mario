@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     bool jump = false;
     bool fire = false;
 
+    float allowedXMovement = 10;
+
+    float leftBoundary;
+
     private Rigidbody2D rigidbody;
 
     // Start is called before the first frame update
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody2D>();
         currentSpeed = normalspeed;
+        leftBoundary = transform.position.x;
     }
 
     // Update is called once per frame
@@ -37,6 +42,8 @@ public class PlayerController : MonoBehaviour
         jump |= Input.GetButtonDown("Jump") && isOnGround;
 
         fire = Input.GetButton("Fire1");
+
+        leftBoundary = Mathf.Max(leftBoundary, transform.position.x - allowedXMovement);
     }
 
     private void FixedUpdate()
@@ -50,7 +57,10 @@ public class PlayerController : MonoBehaviour
             currentSpeed = Mathf.Min(runningSpeed, currentSpeed + 10 * Time.fixedDeltaTime);
         }
 
-        transform.position += Vector3.right * currentSpeed * Time.deltaTime * horizontal;
+        if (transform.position.x > leftBoundary || horizontal > 0)
+        {
+            transform.position += Vector3.right * currentSpeed * Time.deltaTime * horizontal;
+        }
 
         if (jump)
         {
