@@ -70,9 +70,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
 
+        // todo: the point of contact must be - y == 0! or not the sides of x??
         if (standOnTags.Contains(collision.gameObject.tag))
         {
             isOnGround = true;
