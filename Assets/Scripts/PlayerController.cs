@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
@@ -72,11 +73,39 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        var contactNormal = collision.GetContact(0).normal;
+        bool hitTop = contactNormal.y < -0.5;
+        bool hitGround = contactNormal.y > 0.5;
+        bool hitSide = !hitTop && !hitGround;
 
         // todo: the point of contact must be - y == 0! or not the sides of x??
-        if (standOnTags.Contains(collision.gameObject.tag))
+        if (standOnTags.Contains(collision.gameObject.tag)) {
+            var contactPoint = (collision.GetContact(0).point + collision.GetContact(1).point) / 2;
+
+            if (collision.gameObject.CompareTag("Bricks") && hitTop)
+            {
+                Tilemap bricks = collision.gameObject.GetComponent<Tilemap>();
+                var tilePosition = bricks.WorldToCell(contactPoint);
+                bricks.SetTile(tilePosition, null);
+            }
+
+            if (hitGround)
+            {
+                isOnGround = true;
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            isOnGround = true;
+            if (hitGround)
+            {
+                collision.gameObject.GetComponent<EnemyController>().Kill(EnemyController.KillType.JumpOn);
+            }
+            else
+            {
+                Destroy(GetComponent<Collider2D>());
+                FindObjectOfType<GameManager>().GameOver();
+            }
         }
     }
 }
