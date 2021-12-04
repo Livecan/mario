@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     string[] standOnTags;
 
     bool isOnGround = false;
+    bool isTall = false;
 
     float horizontal = 0;
     bool jump = false;
@@ -49,6 +50,20 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isTall)
+        {
+            if (transform.localScale.y < 2)
+            {
+                transform.localScale += Vector3.up * Time.fixedDeltaTime;
+                rigidbody.constraints |= RigidbodyConstraints2D.FreezePosition;
+                horizontal = 0;
+            }
+            else if ((rigidbody.constraints & RigidbodyConstraints2D.FreezePosition) != 0)
+            {
+                rigidbody.constraints ^= RigidbodyConstraints2D.FreezePosition;
+            }
+        }
+
         if (!fire)
         {
             currentSpeed = Mathf.Max(normalspeed, currentSpeed - 10 * Time.fixedDeltaTime);
@@ -115,5 +130,10 @@ public class PlayerController : MonoBehaviour
                 FindObjectOfType<GameManager>().GameOver();
             }
         }
+    }
+
+    public void CollectPowerUp()
+    {
+        isTall = true;
     }
 }

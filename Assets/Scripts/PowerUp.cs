@@ -27,9 +27,6 @@ public class PowerUp : MonoBehaviour
         var contactPointCount = collision.contactCount;
         ContactPoint2D[] contactPoints = new ContactPoint2D[contactPointCount];
         collision.GetContacts(contactPoints);
-        //var contactNormal = collision.GetContact(0).normal;
-
-        //Debug.Log(contactNormal.x + ", " + contactNormal.y);
 
         if (contactPoints.Any(contactPoint => contactPoint.normal.x < -0.5f))
         {
@@ -38,6 +35,14 @@ public class PowerUp : MonoBehaviour
         else if (contactPoints.Any(contactPoint => contactPoint.normal.x > 0.5f))
         {
             direction = Vector3.right;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player")) {
+            collision.gameObject.GetComponent<PlayerController>().CollectPowerUp();
+            Destroy(gameObject);
         }
     }
 }
