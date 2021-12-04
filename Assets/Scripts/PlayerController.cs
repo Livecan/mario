@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // TODO Refactor
     private void OnCollisionEnter2D(Collision2D collision)
     {
         var contactNormal = collision.GetContact(0).normal;
@@ -87,6 +88,13 @@ public class PlayerController : MonoBehaviour
                 Tilemap bricks = collision.gameObject.GetComponent<Tilemap>();
                 var tilePosition = bricks.WorldToCell(contactPoint);
                 bricks.SetTile(tilePosition, null);
+            }
+
+            if (collision.gameObject.CompareTag("Crates") && hitTop)
+            {
+                collision.gameObject.GetComponent<PowerUpCrate>().DestroyTile(contactPoint);
+                // TODO produce powerup
+                // TODO remove the sprite from the tilemap
             }
 
             if (hitGround)
